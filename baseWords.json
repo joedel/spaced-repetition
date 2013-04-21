@@ -1,0 +1,23 @@
+{
+    "wordList" : [
+    {   
+        "spanish": "vez",
+        "english": "time (as in number of times)" 
+    },
+    {
+        "spanish": "año",
+        "english": "year",
+        "nextTestDate"   : "2013-04-21T04:00:00.000Z"
+    },
+    {
+        "spanish": "tiempo",
+        "english": "time - weather",
+        "nextTestDate"   : "2013-04-22T04:00:00.000Z"
+    },
+    {
+        "spanish": "hola",
+        "english": "hello",
+        "nextTestDate"   : "2013-04-19T04:00:00.000Z"
+    }
+    ]
+}

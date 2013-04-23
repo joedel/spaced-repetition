@@ -1,5 +1,4 @@
-{
-    "wordList" : [
+[
     {   
         "spanish": "vez",
         "english": "time (as in number of times)" 
@@ -19,5 +18,4 @@
         "english": "hello",
         "nextTestDate"   : "2013-04-19T04:00:00.000Z"
     }
-    ]
-}
+]

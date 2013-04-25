@@ -1,21 +1,42 @@
 [
-    {   
-        "spanish": "vez",
-        "english": "time (as in number of times)" 
-    },
-    {
-        "spanish": "año",
-        "english": "year",
-        "nextTestDate"   : "2013-04-21T04:00:00.000Z"
-    },
-    {
-        "spanish": "tiempo",
-        "english": "time - weather",
-        "nextTestDate"   : "2013-04-22T04:00:00.000Z"
-    },
-    {
-        "spanish": "hola",
-        "english": "hello",
-        "nextTestDate"   : "2013-04-19T04:00:00.000Z"
-    }
+  {
+    "english": "airport",
+    "spanish": "el aeropuerto"
+  },
+  {
+    "english": "bank",
+    "spanish": "el banco"
+  },
+  {
+    "english": "beach",
+    "spanish": "la playa"
+  },
+  {
+    "english": "garden",
+    "spanish": "el gardín"
+  },
+  {
+    "english": "city",
+    "spanish": "la ciudad"
+  },
+  {
+    "english": "hello",
+    "spanish": "hola"
+  },
+  {
+    "english": "year",
+    "spanish": "año"
+  },
+  {
+    "english": "house",
+    "spanish": "la casa"
+  },
+  {
+    "english": "bed",
+    "spanish": "cama"
+  },
+  {
+    "english": "flower",
+    "spanish": "flor"
+  }
 ]

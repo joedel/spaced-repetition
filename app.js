@@ -27,9 +27,9 @@ function quizWord(number, wordList) {
     writeFile();
   } else {
     var currentWord = wordList[number];
-    console.log("Spanish: " + currentWord.spanish);
+    console.log("Spanish: " + currentWord.word2);
     setTimeout(function() {
-      console.log("Correct Answer: " + currentWord.english);
+      console.log("Correct Answer: " + currentWord.word1);
       getTestResult(number, "Enter 1, 2 or 3: ");
     }, 4000);
   }
@@ -72,7 +72,7 @@ function recordResults(number, result) {
   wordToPush.nextTestDate = nextQuizDate;
   wordToPush.prevTestDate = today;
   wordToPush.testHistory.push({"date" : today, "score" : result});
-  nextWordList.push({ "english" : wordToPush.english, "spanish" : wordToPush.spanish, "nextTestDate" : wordToPush.nextTestDate, "prevTestDate" : wordToPush.prevTestDate, "testHistory" : wordToPush.testHistory});
+  nextWordList.push({ "word1" : wordToPush.word1, "word2" : wordToPush.word2, "nextTestDate" : wordToPush.nextTestDate, "prevTestDate" : wordToPush.prevTestDate, "testHistory" : wordToPush.testHistory});
 
   //kick off the next question
   var nextWord = number + 1;
@@ -106,10 +106,10 @@ function todaysQuizWords(wordList) {
 
     if (nextTestDate <= today) {
       // add it to the list of todays test list
-      todaysWordList.push({ "english" : word.english, "spanish" : word.spanish, "nextTestDate" : nextTestDate, "prevTestDate" : word.prevTestDate, "testHistory" : testHistory });
+      todaysWordList.push({ "word1" : word.word1, "word2" : word.word2, "nextTestDate" : nextTestDate, "prevTestDate" : word.prevTestDate, "testHistory" : testHistory });
 
     } else { // just push it to the list to be saved if not due yet
-      nextWordList.push({ "english" : word.english, "spanish" : word.spanish, "nextTestDate" : word.nextTestDate, "prevTestDate" : word.prevTestDate, "testHistory" : testHistory});
+      nextWordList.push({ "word1" : word.word1, "word2" : word.word2, "nextTestDate" : word.nextTestDate, "prevTestDate" : word.prevTestDate, "testHistory" : testHistory});
     }
   }
 }

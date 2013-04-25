@@ -1,42 +1,42 @@
 [
   {
-    "english": "airport",
-    "spanish": "el aeropuerto"
+    "word1": "airport",
+    "word2": "el aeropuerto"
   },
   {
-    "english": "bank",
-    "spanish": "el banco"
+    "word1": "bank",
+    "word2": "el banco"
   },
   {
-    "english": "beach",
-    "spanish": "la playa"
+    "word1": "beach",
+    "word2": "la playa"
   },
   {
-    "english": "garden",
-    "spanish": "el gardín"
+    "word1": "garden",
+    "word2": "el gardín"
   },
   {
-    "english": "city",
-    "spanish": "la ciudad"
+    "word1": "city",
+    "word2": "la ciudad"
   },
   {
-    "english": "hello",
-    "spanish": "hola"
+    "word1": "hello",
+    "word2": "hola"
   },
   {
-    "english": "year",
-    "spanish": "año"
+    "word1": "year",
+    "word2": "año"
   },
   {
-    "english": "house",
-    "spanish": "la casa"
+    "word1": "house",
+    "word2": "la casa"
   },
   {
-    "english": "bed",
-    "spanish": "cama"
+    "word1": "bed",
+    "word2": "cama"
   },
   {
-    "english": "flower",
-    "spanish": "flor"
+    "word1": "flower",
+    "word2": "flor"
   }
 ]

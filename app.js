@@ -4,6 +4,7 @@ var readline = require('readline');
 var wordList = {};
 var futureQuizList = [];
 var todaysQuizList = [];
+var quizDelay = 4000;
 
 var today = new Date();
 today.setHours(0,0,0,0);
@@ -46,14 +47,14 @@ setTimeout(function() {
 function showQuizItem(number, wordList) {
   if (!wordList[number]) {
     console.log("No more words available today.");
-    writeFile();
+    writeResultsFile();
   } else {
     var currentWord = wordList[number];
     console.log("Spanish: " + currentWord.word2);
     setTimeout(function() {
       console.log("Correct Answer: " + currentWord.word1);
       askQuizResult(number, "Enter 1, 2 or 3: ");
-    }, 4000);
+    }, quizDelay);
   }
 }
 
@@ -65,7 +66,7 @@ function askQuizResult(number, question) {
   rl.question(question, function(result) {
         result = parseInt(result, 10);
         if (result >= 1 && result <= 3) {
-            recordResults(number, result);
+            addToResultList(number, result);
             rl.close();
         } else {
             rl.close();
@@ -74,7 +75,7 @@ function askQuizResult(number, question) {
   });
 }
 
-function recordResults(number, result) {
+function addToResultList(number, result) {
   var wordToPush = todaysQuizList[number];
   var prevTestDate = new Date(wordToPush.prevTestDate); //convert to js date
   var lastQuizInterval = 1;
@@ -118,9 +119,9 @@ function recordResults(number, result) {
   showQuizItem(nextWord, todaysQuizList);
 }
 
-var writeFile = function() {
+function writeResultsFile() {
   fs.writeFile('baseWords.json', JSON.stringify(futureQuizList, null, 2), function(err) {
     if (err) throw err;
     console.log("Results saved to file.");
   });
-};
+}

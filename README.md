@@ -4,8 +4,11 @@ This is a simple command line Node.js program that helps you learn words in a fo
 
 It uses a (very) simple spaced repetition calculation to determine when you should be tested on the same word again, and then prints the results to the orignal file.
 
-Just set up your initial json file with your native language/foreign language pairs and run the program once a day. See baseWords.json for an example with english/spanish words.
-
+To run
+------
+- Clone the repo and create your word list (see baseWords.json)
+- On the command line run: node app.js
+- Repeat as necessary to learn your word list :)
 
 TODO: 
 - let user add words through the cli

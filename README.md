@@ -12,8 +12,12 @@ To run
 
 TODO: 
 - let user add words through the cli
-- improve the spaced repetition algorithm
+- improve the spaced repetition algorithm (probably SM-2)
 - refactor
 - do something interesting with the history, like a graph of progress
 - let user choose when to start or skip to answer without waiting 4 seconds
 - let user choose input file from command line instead of hard coded
+
+License
+-----
+MIT

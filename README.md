@@ -18,6 +18,8 @@ TODO:
 - let user choose when to start or skip to answer without waiting 4 seconds
 - let user choose input file from command line instead of hard coded
 
+note: just started over with hopefully better implementation, please disregard spaced.js and baseCards.json for now
+
 License
 -----
 MIT

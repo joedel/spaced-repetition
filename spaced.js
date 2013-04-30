@@ -19,9 +19,15 @@ console.log("Welcome to Spaced Repetition in Node!\n" +
   "(4) Got it right, had to think about it.\n" +
   "(5) Knew the answer immediately.");
 
-function getUserInput(prompt, next, card) {
+fs.readFile('baseCards.json', function(err, data) {
+  if (err) throw err;
+  cards = JSON.parse(data);
+  getUserInput("Press Enter to Begin...", startQuiz);
+});
+
+function getUserInput(question, next, card) {
   var rl = readline.createInterface(process.stdin, process.stdout);
-  if (prompt) {rl.setPrompt(prompt); }
+  rl.setPrompt(question);
   rl.prompt();
   rl.on('line', function(line) {
     rl.close();
@@ -31,6 +37,15 @@ function getUserInput(prompt, next, card) {
       next(line, card);
     }
   });
+}
+
+function startQuiz(line) {
+  if (line.trim() === "exit") {
+    return;
+  } else {
+    cardCounter = 0;
+    getNextCard(cards[0]);
+  }
 }
 
 function processGrade(line, card) {
@@ -44,21 +59,6 @@ function processGrade(line, card) {
     getUserInput("Please enter 0-5 for... " + card.side2 + ": ", processGrade, card);
   }
 }
-
-function startQuiz(line) {
-  if (line.trim() === "exit") {
-    return;
-  } else {
-    cardCounter = 0;
-    getNextCard(cards[0]);
-  }
-}
-
-fs.readFile('baseCards.json', function(err, data) {
-  if (err) throw err;
-  cards = JSON.parse(data);
-  getUserInput("Press Enter to Begin...", startQuiz);
-});
 
 function getNextCard(card) {
     if (!card) {

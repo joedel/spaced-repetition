@@ -1,12 +1,14 @@
 var fs = require('fs');
 var readline = require('readline');
 
-var quizList = [];
-var futureQuizList = [];
-var quizTimer = 3000;
-var today = new Date();
-today.setHours(0,0,0,0);
+var quizList = [],
+    quizTimer = 1000,
+    today = new Date(),
+    cards = [],
+    cardCounter = 0,
+    dayMS = 1000 * 60 * 60 * 24;
 
+today.setHours(0,0,0,0);
 
 console.log("Welcome to Spaced Repetition in Node!\n" +
   "After each word please grade yourself as follows:\n" +
@@ -17,30 +19,54 @@ console.log("Welcome to Spaced Repetition in Node!\n" +
   "(4) Got it right, had to think about it.\n" +
   "(5) Knew the answer immediately.");
 
-function getUserInput(prompt, printResult) {
+function getUserInput(prompt, next, card) {
   var rl = readline.createInterface(process.stdin, process.stdout);
   if (prompt) {rl.setPrompt(prompt); }
   rl.prompt();
   rl.on('line', function(line) {
     rl.close();
-    printResult(line);
+    if (!card) {
+      next(line);
+    } else {
+      next(line, card);
+    }
   });
 }
 
-function printResult(line) {
-  console.log(line);
+function processGrade(line, card) {
+  var grade = parseInt(line, 10);
+  if (grade <= 5 && grade >= 0) {
+    updateCard(card, grade);
+    cardCounter++;
+    getNextCard(cards[cardCounter]);
+
+  } else { //Bad input
+    getUserInput("Please enter 0-5 for... " + card.side2 + ": ", processGrade, card);
+  }
 }
 
-//You can change the input file here
+function startQuiz(line) {
+  if (line.trim() === "exit") {
+    return;
+  } else {
+    cardCounter = 0;
+    getNextCard(cards[0]);
+  }
+}
+
 fs.readFile('baseCards.json', function(err, data) {
   if (err) throw err;
   cards = JSON.parse(data);
-  buildQuizList(cards);
+  getUserInput("Press Enter to Begin...", startQuiz);
 });
 
-function buildQuizList(cards) {
-  for (i=0; i<cards.length; i++) {
-    var card = cards[i];
+function getNextCard(card) {
+    if (!card) {
+      console.log("Yea we're done here"); //start over?
+      console.log(cards);
+      getUserInput("Done. Hit enter to repeat grades <= 3, or type exit: ", startQuiz);
+      return;
+    }
     //Set Defaults if first time card
     if (!card.nextDate) { card.nextDate = today; }
     if (!card.prevDate) { card.prevDate = today; }
@@ -48,26 +74,64 @@ function buildQuizList(cards) {
     if (!card.rep) {  card.reps = 0; }
     if (!card.EF) { card.EF = 2.5; }
 
-    //var nextDate = new Date(card.nextDate); //convert to js date type
-
     if (card.nextDate <= today) {
-      quizList.push(card);
-      //quizList.push({ "side1" : card.side1, "side2" : card.side2, "nextDate" : nextDate, "prevDate" : card.prevDate, "EF" : card.EF });
-    } else { // just push it to the list to be saved if not due yet
-      futureQuizList.push(card);
-      //futureQuizList.push({ "side1" : card.side1, "side2" : card.side2, "nextDate" : card.nextDate, "prevDate" : word.prevDate});
+      quizCard(card);
+    } else {
+      cardCounter++;
+      getNextCard(cards[cardCounter]);
     }
-
-  }
-    console.log("Cards At The Ready: " + quizList.length);
-    tryQuiz(quizList);
 }
 
-function tryQuiz(quizList) {
-  var card = quizList[0];
+function quizCard(card) {
     console.log("Side 1: " + card.side1);
     setTimeout(function() {
       console.log("Side 2: " + card.side2);
-      getUserInput("Grade> ", printResult);
+      getUserInput("Grade> ", processGrade, card);
     }, quizTimer);
+}
+
+function updateCard(card, grade) {
+  var oldEF = card.EF,
+      newEF = 0,
+      nextDate = new Date(today);
+
+  if (grade < 3) {
+
+    card.reps = 0; //Reset the reps as if it was a new card
+    card.interval = 0; //Repeat today
+
+  } else {
+
+    newEF = oldEF + (0.1 - (5-grade)*(0.08+(5-grade)*0.02));
+
+    if (newEF < 1.3) { // 1.3 is the minimum EF
+      card.EF = 1.3; 
+    } else {
+      card.EF = newEF;
+    }
+
+    card.reps = card.reps + 1;
+    
+    switch (card.reps) {
+      case 1:
+        card.interval = 1;
+        break;
+      case 2:
+        card.interval = 6;
+        break;
+      default:
+        card.interval = Math.ceil((card.reps - 1) * card.EF);
+        break;
+    }
+  }
+
+  if (grade === 3) {
+    card.interval = 0; //anything 3 and below should be repeated today if possible
+  }
+
+  nextDate.setDate(today.getDate() + card.interval);
+  card.nextDate = nextDate;
+
+  //console.log(card);
+  //console.log(cards[cardCounter]);
 }

@@ -1,3 +1,14 @@
+//What Is This?
+//Spaced Repetition is a learning system that attempts to quiz the user
+//with flash cards at specific intervals for maximum memory retention. 
+//The interval is determined by the rating the user gives after seeing
+//each card.
+
+//The algorithm implemented here is the SM-2 algorithm used in the SuperMemo-2
+//program as well as the popular open source Anki software.
+//The algorithm is described here: http://www.supermemo.com/english/ol/sm2.htm
+
+
 var fs = require('fs');
 var readline = require('readline');
 
@@ -10,7 +21,7 @@ var quizList = [],
 
 today.setHours(0,0,0,0);
 
-console.log("Welcome to Spaced Repetition in Node!\n" +
+console.log("Welcome to Command Line Spaced Repetition!\n" +
   "After each word please grade yourself as follows:\n" +
   "(0) What the heck was that? (No recognition)\n" +
   "(1) Wrong answer, but recognized the word.\n" +

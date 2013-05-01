@@ -1,23 +1,29 @@
-//What Is This?
-//Spaced Repetition is a learning system that attempts to quiz the user
-//with flash cards at specific intervals for maximum memory retention. 
-//The interval is determined by the rating the user gives after seeing
-//each card.
+// This is a command line spaced repetition program, useful for learning
+// or memorizing any material that could be on a flash card. Most commonly used
+// for learning new languages, or specific sets of data.
 
-//The algorithm implemented here is the SM-2 algorithm used in the SuperMemo-2
-//program as well as the popular open source Anki software.
-//The algorithm is described here: http://www.supermemo.com/english/ol/sm2.htm
+// Spaced Repetition is an efficient learning system that attempts to quiz the 
+// user with flash cards at specific intervals for maximum memory retention. 
+// The quiz interval is determined by the (0-5) rating the user gives after seeing
+// each card, and increases or decreases depending on difficulty.
 
+// The algorithm implemented here is the SM-2 algorithm used in the SuperMemo-2
+// software as well as the popular open source Anki software.
+// The algorithm is described here: http://www.supermemo.com/english/ol/sm2.htm
+
+// Open Source MIT LICENSE
+// This code lives here: https://github.com/joedel/spaced-repetition/
+// Any feedback or tips to improve greatly appreciated.
 
 var fs = require('fs');
 var readline = require('readline');
 
-var quizList = [],
-    quizTimer = 1000,
+var cardFile = 'baseCards.json',
+    quizList = [],
+    quizTimer = 4000,
     today = new Date(),
     cards = [],
-    cardCounter = 0,
-    dayMS = 1000 * 60 * 60 * 24;
+    cardCounter = 0;
 
 today.setHours(0,0,0,0);
 
@@ -44,7 +50,7 @@ function readCardFile(file) {
   });
 }
 
-readCardFile('baseCards.json');
+readCardFile(cardFile);
 
 function getUserInput(question, next, card) {
   var rl = readline.createInterface(process.stdin, process.stdout);
@@ -72,37 +78,39 @@ function startStopQuiz(line) {
   }
 }
 
+//Amount of cards up for quizzing today
 function cardQuizCount() {
   var count = 0;
   for (var i=0; i<cards.length; i++) {
-      if (cards[i].interval === 0 || !cards[i].interval) {
+      var c = cards[i];
+      var d = new Date(c.nextDate);
+      if (c.interval === 0 || !c.interval || d.getTime() === today.getTime()) {
         count++;
       }
   }
-  //console.log(count);
   return count;
 }
 
-cardQuizCount();
-
 function getNextCard(card) {
     if (!card) {
+      writeCardFile(cardFile); //Save to file
       var count = cardQuizCount();
       if (count) {
-        getUserInput("Done. Hit enter to repeat " + count + " cards graded 3 or lower, or type exit to finish: ", startStopQuiz);
+        getUserInput("Done. Hit enter to repeat " + count + " cards graded 3 or lower, or type exit to finish", startStopQuiz);
       } else {
-        getUserInput("Done for today. Type 'exit' or hit Ctrl-C to quit", startStopQuiz);
+        getUserInput("Done for today. Don't forget to come back tomorrow. :) (enter to exit)", startStopQuiz);
       }
       return;
     }
-    //Set Defaults if first time card
+    //Set Defaults if new card
     if (!card.nextDate) { card.nextDate = today; }
     if (!card.prevDate) { card.prevDate = today; }
     if (!card.interval) { card.interval = 0; }
-    if (!card.rep) {  card.reps = 0; }
+    if (!card.reps) {  card.reps = 0; }
     if (!card.EF) { card.EF = 2.5; }
 
-    if (card.nextDate <= today) {
+    var nextDate = new Date(card.nextDate); //convert to comparable date type
+    if (nextDate <= today) {
       quizCard(card);
     } else {
       cardCounter++;
@@ -114,36 +122,38 @@ function quizCard(card) {
     console.log("Side 1: " + card.side1);
     setTimeout(function() {
       console.log("Side 2: " + card.side2);
-      getUserInput("Grade> ", processGrade, card);
+      getUserInput("Grade> ", updateCard, card);
     }, quizTimer);
 }
 
-function processGrade(line, card) {
+function updateCard(line, card) {
   var grade = parseInt(line, 10);
   if (grade <= 5 && grade >= 0) {
-    updateCard(card, grade);
+    calcIntervalEF(card, grade);
     cardCounter++;
     getNextCard(cards[cardCounter]);
 
   } else { //Bad input
-    getUserInput("Please enter 0-5 for... " + card.side2 + ": ", processGrade, card);
+    getUserInput("Please enter 0-5 for... " + card.side2 + ": ", updateCard, card);
   }
 }
 
-function updateCard(card, grade) {
+// Briefly the algorithm works like this:
+// EF (easiness factor) is a rating for how difficult the card is.
+// Grade: (0-2) Set reps and interval to 0, keep current EF (repeat card today)
+//        (3)   Set interval to 0, lower the EF, reps + 1 (repeat card today)
+//        (4-5) Reps + 1, interval is calculated using EF, increasing in time.
+function calcIntervalEF(card, grade) {
   var oldEF = card.EF,
       newEF = 0,
       nextDate = new Date(today);
 
   if (grade < 3) {
-
-    card.reps = 0; //Reset the reps as if it was a new card
-    card.interval = 0; //Repeat today
-
+    card.reps = 0;
+    card.interval = 0;
   } else {
 
     newEF = oldEF + (0.1 - (5-grade)*(0.08+(5-grade)*0.02));
-
     if (newEF < 1.3) { // 1.3 is the minimum EF
       card.EF = 1.3;
     } else {
@@ -166,12 +176,16 @@ function updateCard(card, grade) {
   }
 
   if (grade === 3) {
-    card.interval = 0; //anything 3 and below should be repeated today if possible
+    card.interval = 0;
   }
 
   nextDate.setDate(today.getDate() + card.interval);
   card.nextDate = nextDate;
+}
 
-  //console.log(card);
-  //console.log(cards[cardCounter]);
+function writeCardFile(cardFile) {
+  fs.writeFile(cardFile, JSON.stringify(cards, null, 2), function(err) {
+    if (err) throw err;
+    console.log("\nProgress saved back to file.");
+  });
 }

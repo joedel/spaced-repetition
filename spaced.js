@@ -19,11 +19,21 @@ console.log("Welcome to Spaced Repetition in Node!\n" +
   "(4) Got it right, had to think about it.\n" +
   "(5) Knew the answer immediately.");
 
-fs.readFile('baseCards.json', function(err, data) {
-  if (err) throw err;
-  cards = JSON.parse(data);
-  getUserInput("Press Enter to Begin...", startQuiz);
-});
+function readCardFile(file) {
+  fs.readFile(file, function(err, data) {
+    if (err) throw err;
+    cards = JSON.parse(data);
+    var count = cardQuizCount();
+    if (count) {
+      console.log("You have " + count + " cards to go through today");
+      getUserInput("Press Enter to Begin...", startStopQuiz);
+    } else {
+      console.log("There are no cards to quiz for today");
+    }
+  });
+}
+
+readCardFile('baseCards.json');
 
 function getUserInput(question, next, card) {
   var rl = readline.createInterface(process.stdin, process.stdout);
@@ -39,32 +49,39 @@ function getUserInput(question, next, card) {
   });
 }
 
-function startQuiz(line) {
+function startStopQuiz(line) {
   if (line.trim() === "exit") {
     return;
   } else {
-    cardCounter = 0;
-    getNextCard(cards[0]);
+    var count = cardQuizCount();
+    if (count) {
+      cardCounter = 0;
+      getNextCard(cards[0]);
+    }
   }
 }
 
-function processGrade(line, card) {
-  var grade = parseInt(line, 10);
-  if (grade <= 5 && grade >= 0) {
-    updateCard(card, grade);
-    cardCounter++;
-    getNextCard(cards[cardCounter]);
-
-  } else { //Bad input
-    getUserInput("Please enter 0-5 for... " + card.side2 + ": ", processGrade, card);
+function cardQuizCount() {
+  var count = 0;
+  for (var i=0; i<cards.length; i++) {
+      if (cards[i].interval === 0 || !cards[i].interval) {
+        count++;
+      }
   }
+  //console.log(count);
+  return count;
 }
+
+cardQuizCount();
 
 function getNextCard(card) {
     if (!card) {
-      console.log("Yea we're done here"); //start over?
-      console.log(cards);
-      getUserInput("Done. Hit enter to repeat grades <= 3, or type exit: ", startQuiz);
+      var count = cardQuizCount();
+      if (count) {
+        getUserInput("Done. Hit enter to repeat " + count + " cards graded 3 or lower, or type exit to finish: ", startStopQuiz);
+      } else {
+        getUserInput("Done for today. Type 'exit' or hit Ctrl-C to quit", startStopQuiz);
+      }
       return;
     }
     //Set Defaults if first time card
@@ -90,6 +107,18 @@ function quizCard(card) {
     }, quizTimer);
 }
 
+function processGrade(line, card) {
+  var grade = parseInt(line, 10);
+  if (grade <= 5 && grade >= 0) {
+    updateCard(card, grade);
+    cardCounter++;
+    getNextCard(cards[cardCounter]);
+
+  } else { //Bad input
+    getUserInput("Please enter 0-5 for... " + card.side2 + ": ", processGrade, card);
+  }
+}
+
 function updateCard(card, grade) {
   var oldEF = card.EF,
       newEF = 0,
@@ -105,13 +134,13 @@ function updateCard(card, grade) {
     newEF = oldEF + (0.1 - (5-grade)*(0.08+(5-grade)*0.02));
 
     if (newEF < 1.3) { // 1.3 is the minimum EF
-      card.EF = 1.3; 
+      card.EF = 1.3;
     } else {
       card.EF = newEF;
     }
 
     card.reps = card.reps + 1;
-    
+
     switch (card.reps) {
       case 1:
         card.interval = 1;

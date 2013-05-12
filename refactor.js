@@ -41,11 +41,11 @@ function readCardFile(file) {
 function cardQuizCount() {
   var count = 0;
   for (var i=0; i<cards.length; i++) {
-      var card = cards[i];
-      var date = new Date(card.nextDate);
-      if (card.interval === 0 || !card.interval || date.getTime() <= today.getTime()) {
-        count++;
-      }
+    var card = cards[i];
+    var date = new Date(card.nextDate);
+    if (card.interval === 0 || !card.interval || date.getTime() <= today.getTime()) {
+      count++;
+    }
   }
   return count;
 }
@@ -85,32 +85,32 @@ function endOfCardList() {
 }
 
 function getNextCard(card) {
-    if (!card) {
-      endOfCardList();
-      return;
-    }
-    //defaults if new card
-    if (!card.nextDate) { card.nextDate = today; }
-    if (!card.prevDate) { card.prevDate = today; }
-    if (!card.interval) { card.interval = 0; }
-    if (!card.reps) {  card.reps = 0; }
-    if (!card.EF) { card.EF = 2.5; }
+  if (!card) {
+    endOfCardList();
+    return;
+  }
+  //defaults if new card
+  if (!card.nextDate) { card.nextDate = today; }
+  if (!card.prevDate) { card.prevDate = today; }
+  if (!card.interval) { card.interval = 0; }
+  if (!card.reps) {  card.reps = 0; }
+  if (!card.EF) { card.EF = 2.5; }
 
-    var nextDate = new Date(card.nextDate); //convert to comparable date type
-    if (nextDate <= today) {
-      quizCard(card);
-    } else {
-      cardCounter++;
-      getNextCard(cards[cardCounter]);
-    }
+  var nextDate = new Date(card.nextDate); //convert to comparable date type
+  if (nextDate <= today) {
+    quizCard(card);
+  } else {
+    cardCounter++;
+    getNextCard(cards[cardCounter]);
+  }
 }
 
 function quizCard(card) {
-    console.log("Side 1: " + card.side1);
-    setTimeout(function() {
-      console.log("Side 2: " + card.side2);
-      getUserInput("Grade> ", parseCardGrade, card);
-    }, quizTimer);
+  console.log("Side 1: " + card.side1);
+  setTimeout(function() {
+    console.log("Side 2: " + card.side2);
+    getUserInput("Grade> ", parseCardGrade, card);
+  }, quizTimer);
 }
 
 function parseCardGrade(line, card) {

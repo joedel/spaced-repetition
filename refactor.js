@@ -14,9 +14,9 @@
 var fs = require('fs');
 var readline = require('readline');
 
-var cardFile = 'baseCards2.json',
+var cardFile = 'baseCards.json',
     quizList = [],
-    quizTimer = 500,
+    quizTimer = 4000,
     today = new Date(),
     cards = [],
     cardCounter = 0,
@@ -43,7 +43,7 @@ function cardQuizCount() {
   for (var i=0; i<cards.length; i++) {
       var card = cards[i];
       var date = new Date(card.nextDate);
-      if (card.interval === 0 || !card.interval || date.getTime() === today.getTime()) {
+      if (card.interval === 0 || !card.interval || date.getTime() <= today.getTime()) {
         count++;
       }
   }
@@ -95,7 +95,7 @@ function getNextCard(card) {
     if (!card.interval) { card.interval = 0; }
     if (!card.reps) {  card.reps = 0; }
     if (!card.EF) { card.EF = 2.5; }
-    
+
     var nextDate = new Date(card.nextDate); //convert to comparable date type
     if (nextDate <= today) {
       quizCard(card);
